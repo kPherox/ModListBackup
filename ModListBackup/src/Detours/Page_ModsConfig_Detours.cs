@@ -1,7 +1,8 @@
 ﻿using ExtraWidgets;
 using HugsLib;
-using HugsLib.GuiInject;
-using HugsLib.Source.Detour;
+//using HugsLib.GuiInject;
+//using HugsLib.Source.Detour;
+using Harmony;
 using ModListBackup.Handlers;
 using ModListBackup.Handlers.Settings;
 using RimWorld;
@@ -18,6 +19,8 @@ namespace ModListBackup.Detours
     /// <summary>
     /// Class to Handle our code injection
     /// </summary>
+    [HarmonyPatch(typeof(Page_ModsConfig), "DoWindowContents")]
+    [HarmonyPatch(typeof(Page_ModsConfig), "PostClose")]
     static class Page_ModsConfig_Detours
     {
         private static float ButtonBigWidth = 110f;
@@ -57,14 +60,16 @@ namespace ModListBackup.Detours
         /// </summary>
         /// <param name="window">Page_ModsConfig's Window</param>
         /// <param name="rect">Page_ModConfig's Rect</param>
-        [WindowInjection(typeof(Page_ModsConfig))]
-        private static void DoWindowContents(Window window, Rect rect)
+        // [WindowInjection(typeof(Page_ModsConfig))]
+        [HarmonyPostfix]
+        private static void DoWindowContentsDetour(Rect rect)
         {
             DoBottomLeftWindowContents(rect);
             DoBottomRightWindowContents(rect);
         }
 
-        [DetourMethod(typeof(Page_ModsConfig), "PostClose")]
+        // [DetourMethod(typeof(Page_ModsConfig), "PostClose")]
+        [HarmonyPostfix]
         private static void PostCloseDetour(this Page_ModsConfig self)
         {
             if (SettingsHandler.LastRestartOnClose.Value != RestartOnClose)
