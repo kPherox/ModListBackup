@@ -19,8 +19,9 @@ namespace ModListBackup.Detours
     /// <summary>
     /// Class to Handle our code injection
     /// </summary>
-    [HarmonyPatch(typeof(Page_ModsConfig), "DoWindowContents")]
-    [HarmonyPatch(typeof(Page_ModsConfig), "PostClose")]
+    [HarmonyPatch(typeof(Page_ModsConfig))]
+    [HarmonyPatch("DoWindowContents")]
+    [HarmonyPatch("PostClose")]
     static class Page_ModsConfig_Detours
     {
         private static float ButtonBigWidth = 110f;
@@ -60,7 +61,6 @@ namespace ModListBackup.Detours
         /// </summary>
         /// <param name="window">Page_ModsConfig's Window</param>
         /// <param name="rect">Page_ModConfig's Rect</param>
-        // [WindowInjection(typeof(Page_ModsConfig))]
         [HarmonyPostfix]
         private static void DoWindowContentsDetour(Rect rect)
         {
@@ -68,7 +68,6 @@ namespace ModListBackup.Detours
             DoBottomRightWindowContents(rect);
         }
 
-        // [DetourMethod(typeof(Page_ModsConfig), "PostClose")]
         [HarmonyPostfix]
         private static void PostCloseDetour(this Page_ModsConfig self)
         {
@@ -173,11 +172,6 @@ namespace ModListBackup.Detours
         /// <param name="rect">The rect to draw into</param>
         private static void DoBottomRightWindowContents(Rect rect)
         {
-            // Restart checkbox
-            Rect RestartCheckbox = new Rect((rect.xMax - (rect.width /2)) + 65f, rect.yMax - 29f, 150f, BottomHeight);
-            TooltipHandler.TipRegion(RestartCheckbox, "Checkbox_Restart_Tooltip".Translate());
-            CustomWidgets.CheckboxLabeledInverse(RestartCheckbox, "Checkbox_Restart_Label".Translate(), ref RestartOnClose);
-
             // Import Button
             Rect ImportRect = new Rect(rect.xMax - BottomRightContentOffset, rect.yMax - 37f, ButtonBigWidth, BottomHeight);
             TooltipHandler.TipRegion(ImportRect, "Button_Import_Tooltip".Translate());
@@ -186,7 +180,6 @@ namespace ModListBackup.Detours
                 Dialogs.Dialog_Import importWindow = new Dialogs.Dialog_Import();
                 Find.WindowStack.Add(importWindow);
             }
-
         }
 
         /// <summary>
